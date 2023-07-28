@@ -22,7 +22,7 @@ const sp = {
         },
     },
     login: {
-        redirectUri: '/tools/sidekick/spauth.html',
+        redirectUri: '',
     },
 };
 
