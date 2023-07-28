@@ -4,14 +4,15 @@ import { Document, Paragraph, Packer, HeadingLevel,Table, TableRow, TableCell, W
 const graphURL = 'https://graph.microsoft.com/v1.0';
 const baseURI = 'https://graph.microsoft.com/v1.0/drives/b!9IXcorzxfUm_iSmlbQUd2rvx8XA-4zBAvR2Geq4Y2sZTr_1zgLOtRKRA81cvIhG1/root:/fcbayern';
 const driveIDGlobal = 'b!9IXcorzxfUm_iSmlbQUd2rvx8XA-4zBAvR2Geq4Y2sZTr_1zgLOtRKRA81cvIhG1';
-const folderID = '01DF7GY22Q5CGW5CPVAVFKGW62R5XEIQ3X';
+const folderID = '01DF7GY25UXXMGWVSXHRDLDO6YY6QYBTJT';
 let connectAttempts = 0;
 let accessToken;
 
 const orgName = 'anagarwa';
 const repoName = 'adobe-screens-brandads';
 const ref = 'main';
-const path = 'content/screens/dummyads';
+const mainfolder = 'brandads';
+const path = 'content/screens/gw2023';
 const mockNotificationService = 'https://288650-257ambermackerel.adobeio-static.net/api/v1/web/brandads/getads';
 
 const sp = {
@@ -218,9 +219,9 @@ async function uploadImage(folderId, imageUrl) {
         body: imageBlob
     });
     if (uploadResponse.ok) {
-        const response = await uploadResponse.json();
+        const jsonResponse = await uploadResponse.json();
         console.log('Image has been uploaded');
-        return response.webUrl;
+        return jsonResponse.webUrl;
     } else {
         console.log('here 4');
     }
@@ -260,7 +261,7 @@ async function getFolderID() {
     try {
         validateConnnection();
         const options = getRequestOption();
-        const parentFolderPath = 'brandads/content/screens/dummyads';
+        const parentFolderPath = `${mainfolder}/${path}`;
         const getByPathUrl = `https://graph.microsoft.com/v1.0/drives/${driveIDGlobal}/root:/${parentFolderPath}:/`;
         const driveResponse = await fetch(getByPathUrl, options);
         const response = await driveResponse.json();
