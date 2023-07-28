@@ -116,61 +116,62 @@ async function logImg() {
 
 async function uploadDocumentFile(folderId, imagesData, fileName) {
 
-    console.log("Data:", imagesData);
-    const doc = new Document({
-        sections: [
-            {
-                properties: {},
+    console.log("Data:", JSON.stringify(imagesData));
+    try {
+        const rows = await Promise.all(imagesData.map(async (item) => {
+            return new TableRow({
                 children: [
-                    new Table({
-                        width: {
-                            size: 5000, // Set the table width (in DXA units)
-                            type: WidthType.DXA, // Use DXA units for width
-                        },
-                        rows: [
-                            new TableRow({
-                                children: [
-                                    new TableCell({
-                                        children: [new Paragraph("carousel")],
-                                        columnSpan: 2,
-                                    }),
-                                ],
-                            }),
-                            ...imagesData.map((item) => (
+                    new TableCell({
+                        children: [new Paragraph("abc")],
+                    }),
+                    new TableCell({
+                        children: [new Paragraph({
+                            children: [
+                                new ExternalHyperlink({
+                                    children: [
+                                        new TextRun({
+                                            text: "XYZ",
+                                            style: "Hyperlink",
+                                        }),
+                                    ],
+                                    link: item.image,
+                                }),
+                            ],
+                        })],
+                    }),
+                ],
+            });
+        }));
+
+        const doc = new Document({
+            sections: [
+                {
+                    properties: {},
+                    children: [
+                        new Table({
+                            width: {
+                                size: 5000, // Set the table width (in DXA units)
+                                type: WidthType.DXA, // Use DXA units for width
+                            },
+                            rows: [
                                 new TableRow({
                                     children: [
                                         new TableCell({
-                                            children: [new Paragraph("abc")],
-                                        }),
-                                        new TableCell({
-                                            children: [new Paragraph({
-                                                children: [
-                                                    new ExternalHyperlink({
-                                                        children: [
-                                                            new TextRun({
-                                                                text: "XYZ",
-                                                                style: "Hyperlink",
-                                                            }),
-                                                        ],
-                                                        link: "https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5/cf132716-ebc3-4bf0-897e-7e9c03490b1e/air-jordan-xxxvii-low-pf-basketball-shoes-7z7ltC.png",
-                                                    }),
-                                                ],
-                                            })]
+                                            children: [new Paragraph("carousel")],
+                                            columnSpan: 2,
                                         }),
                                     ],
-                                })
-                            )),
-                        ],
-                    }),
-                ],
-            },
-        ],
-    });
+                                }),
+                                ...rows,
+                            ],
+                        }),
+                    ],
+                },
+            ],
+        });
 
-    try {
         const buffer = await Packer.toBuffer(doc);
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-        //saveAs(blob, `first.docx`);
         const uploadUrl = `https://graph.microsoft.com/v1.0/drives/${driveIDGlobal}/items/${folderId}:/${fileName}:/content`;
 
         const uploadResponse = await fetch(uploadUrl, {
@@ -193,13 +194,6 @@ async function uploadDocumentFile(folderId, imagesData, fileName) {
         console.error("Error creating or saving the document:", error);
     }
 }
-
-// function createHyperlinkText(text, link) {
-//     const textRun = new TextRun(text);
-//     textRun.link(link);
-//     return textRun;
-// }
-
 
 async function uploadImage(folderId, imageUrl) {
     //const imageUrl = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/dam/ads/mdsrimages/ad4/1.png';
