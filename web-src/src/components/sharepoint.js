@@ -102,7 +102,9 @@ export async function PublishAndNotify(imagesData) {
     response = await fetch(requestUrl, options);
 
     if (response.ok) {
+        const previewdPath = `http://${ref}--${repoName}--${orgName}.hlx.page/${path}/${currentFolderName}/${currentFileName.substring(0, currentFileName.indexOf('.'))}`;
         console.log(`Image Previewed at path http://${ref}--${repoName}--${orgName}.hlx.page/${path}/${currentFolderName}/${currentFileName.substring(0, currentFileName.indexOf('.'))}`);
+        return previewdPath;
     } else {
         throw new Error(`Could not previewed. Status: ${response.status}`);
     }

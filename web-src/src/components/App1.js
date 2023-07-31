@@ -1,5 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* 
+* <license header>
+*/
+
+import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components';
+import {connect, PublishAndNotify, quickpublish} from './sharepoint.js';
+
 import axios from "axios";
 
 const Container = styled.div`
@@ -151,7 +157,21 @@ const UrlText = styled.a`
   margin-top: 5px;
 `;
 
-function App() {
+
+function App (props) {
+  console.log('runtime object:', props.runtime)
+  console.log('ims object:', props.ims)
+
+  // use exc runtime event handlers
+  // respond to configuration change events (e.g. user switches org)
+  props.runtime.on('configuration', ({ imsOrg, imsToken, locale }) => {
+    console.log('configuration change', { imsOrg, imsToken, locale })
+  })
+  // respond to history change events
+  props.runtime.on('history', ({ type, path }) => {
+    console.log('history change', { type, path })
+  })
+
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const messageAreaRef = useRef(null);
@@ -172,6 +192,7 @@ function App() {
     jsonObject.finalImages = {type:'final_image', data: [{image:image1, text:''}, {image:image2, text:''}, {image:image3, text:''}]};
     jsonObject.modifiedImages = {type:'modified_image', data: []};
     jsonObject.changedImages = {type:'changed_image', data: []};
+    jsonObject.uploadImages = {type:'upload', data: [{image:image1, text:''}, {image:image2, text:''}, {image:image3, text:''}]};
 
     const getPromptResponse = (prompt) => {
 
@@ -186,6 +207,9 @@ function App() {
         }
         if(prompt.includes('change')) {
             return jsonObject.changedImages;
+        }
+        if(prompt.includes('upload')) {
+            return jsonObject.uploadImages;
         }
     };
 
@@ -234,9 +258,34 @@ function App() {
                     const finalImages = jsonObject.finalImages.data;
                     addImageAndTextComponent(finalImages);
                     break;
+                case 'upload' :
+                    const image = jsonObject.uploadImages.data;
+                    uploadImage(image);
+                    break;
                 default:
             }
         }
+    }
+
+    const uploadImage = (images) => {
+        const fetchData = async () => {
+            try {
+                await connect(async () => {
+                    try {
+                        const response  = await PublishAndNotify(images);
+                        console.log(response);
+                        // setData(response);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+            } catch (error) {
+                console.error('Error in async function:', error);
+            }
+        };
+
+        fetchData();
+
     }
 
     const addImageAndTextComponent = (imageAndTexts) => {
@@ -383,6 +432,23 @@ function App() {
             </div>
         </div>
     );
+
+  // Methods
+
+  // error handler on UI rendering failure
+  function onError (e, componentStack) { }
+
+  // component to show if UI fails rendering
+  function fallbackComponent ({ componentStack, error }) {
+    return (
+      <React.Fragment>
+        <h1 style={{ textAlign: 'center', marginTop: '20px' }}>
+          Something went wrong :(
+        </h1>
+        <pre>{componentStack + '\n' + error.message}</pre>
+      </React.Fragment>
+    )
+  }
 }
 
-export default App;
+export default App

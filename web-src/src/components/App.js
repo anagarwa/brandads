@@ -154,62 +154,83 @@ const UrlText = styled.a`
   color: #007bff;
   text-decoration: none;
   cursor: pointer;
-  margin-top: 5px;
+  margin: 5px;
 `;
 
 
 function App (props) {
-  console.log('runtime object:', props.runtime)
-  console.log('ims object:', props.ims)
+    console.log('runtime object:', props.runtime)
+    console.log('ims object:', props.ims)
 
-  // use exc runtime event handlers
-  // respond to configuration change events (e.g. user switches org)
-  props.runtime.on('configuration', ({ imsOrg, imsToken, locale }) => {
-    console.log('configuration change', { imsOrg, imsToken, locale })
-  })
-  // respond to history change events
-  props.runtime.on('history', ({ type, path }) => {
-    console.log('history change', { type, path })
-  })
+    // use exc runtime event handlers
+    // respond to configuration change events (e.g. user switches org)
+    props.runtime.on('configuration', ({ imsOrg, imsToken, locale }) => {
+        console.log('configuration change', { imsOrg, imsToken, locale })
+    })
+    // respond to history change events
+    props.runtime.on('history', ({ type, path }) => {
+        console.log('history change', { type, path })
+    })
 
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const messageAreaRef = useRef(null);
     const [dynamicComponents, setDynamicComponents] = useState([]);
     const lastDynamicComponentRef = useRef(null);
+    const [loading, setLoading] = useState(false);
 
-    const image1 = 'https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5/cf132716-ebc3-4bf0-897e-7e9c03490b1e/air-jordan-xxxvii-low-pf-basketball-shoes-7z7ltC.png';
-    const text1 = 'Lace UpEnchane Game';
-    const image2 = 'https://static.nike.com/a/images/t_PDP_864_v1/f_auto,b_rgb:f5f5f5/ba98ed6b-72f7-4ba8-81a1-bb336fad67f5/air-jordan-xxxvii-low-pf-basketball-shoes-7z7ltC.png'
-    const text2 = 'Land Soft. Play hard';
-    const image3 = 'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/e4d6b204-6b05-4ec8-b3c1-649e3258f111/air-jordan-xxxvii-low-pf-basketball-shoes-7z7ltC.png';
-    const text3 = 'Dominate the court';
-    let jsonObject = {};
+    const image1 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/p1.png';
+    const image2 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/p2.png';
+    const image3 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/p3.png';
 
-    jsonObject.urls = {type:'url', data: ['https://www.nike.com/in/t/air-zoom-pegasus-40-older-road-running-shoes-S0gQ5F/DX2498-600', 'https://www.nike.com/in/t/air-jordan-xxxvii-low-pf-basketball-shoes-7z7ltC', 'https://www.nike.com/in/t/lebron-witness-7-older-basketball-shoes-bV8fWg/DQ8650-100']};
-    jsonObject.imageUrls = {type:'imageAndText', data: [{image:image1, text:text1}, {image:image2, text:text2}, {image:image3, text:text3}]};
-    jsonObject.campaignImages = {type:'campaign_image', data: [{image:image1, text:''}, {image:image2, text:''}, {image:image3, text:''}]};
-    jsonObject.finalImages = {type:'final_image', data: [{image:image1, text:''}, {image:image2, text:''}, {image:image3, text:''}]};
-    jsonObject.modifiedImages = {type:'modified_image', data: []};
-    jsonObject.changedImages = {type:'changed_image', data: []};
-    jsonObject.uploadImages = {type:'upload', data: [{image:image1, text:''}, {image:image2, text:''}, {image:image3, text:''}]};
+    const url1 = 'https://www.adidas.co.in/copa-pure.3-firm-ground-boots/HQ8941.html';
+    const url2 = 'https://www.adidas.co.in/x-crazyfast.1-fg/HQ4516.html';
+    const url3 = 'https://www.adidas.co.in/valentines-day-ultraboost-1.0-shoes/HQ3857.html';
 
+    const imageUrl1 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/1.png';
+    const imageUrl2 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/2.png';
+    const imageUrl3 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/3.png';
+
+    const imageUrl4 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/redoutput.png';
+    const imageUrl5 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/redoutput2.png';
+    const imageUrl6 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/redoutput3.png';
+
+    const imageUrl7 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/blueoutput.png';
+    const imageUrl8 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/blueoutput2.png';
+    const imageUrl9 = 'https://raw.githubusercontent.com/anagarwa/adobe-screens-brandads/main/content/screens/ads/gw/ad1/blueoutput3.png';
+
+    const text1 = 'Engineered for Comfort';
+    const text2 = 'X CRAZYFAST.1 FG';
+    const text3 = 'Layered Mesh Support';
+    const text4 = 'Engineered for Stability';
+
+    const jsonRef = useRef({
+        imageAndUrls: { type: 'imageAndUrl', data: [{ image: image1, text: url1 }, { image: image2, text: url2 }, { image: image3, text: url3 }] },
+        imageAndTexts: { type: 'imageAndText', data: [{ image: imageUrl1, text: text1 }, { image: imageUrl2, text: text2 }, { image: imageUrl3, text: text3 }] },
+        modifiedText: { type: 'modifiedText', data: [{ image: imageUrl1, text: text4 }, { image: imageUrl2, text: text2 }, { image: imageUrl3, text: text3 }] },
+        experienceImages: { type: 'experienceImage', data: [{ image: imageUrl4, text: '' }, { image: imageUrl5, text: '' }, { image: imageUrl6, text: '' }] },
+        campaignImages: { type: 'campaignImage', data: [{ image: imageUrl7, text: '' }, { image: imageUrl8, text: '' }, { image: imageUrl9, text: '' }] },
+        uploadImages: { type: 'uploadImage', data: [{ image: imageUrl7, text: '' }, { image: imageUrl8, text: '' }, { image: imageUrl9, text: '' }] },
+    });
     const getPromptResponse = (prompt) => {
 
         if(prompt.includes('football')) {
-            return jsonObject.urls;
+            return jsonRef.current.imageAndUrls;
         }
-        if(prompt.includes('images')) {
-            return jsonObject.imageUrls;
+        if(prompt.includes('page')) {
+            return jsonRef.current.imageAndTexts;
+        }
+        if(prompt.includes('text')) {
+            return jsonRef.current.modifiedText;
+        }
+        if(prompt.includes('experiences')) {
+            return jsonRef.current.experienceImages;
+        }
+        if(prompt.includes('color')) {
+            return jsonRef.current.campaignImages;
         }
         if(prompt.includes('campaign')) {
-            return jsonObject.campaignImages;
-        }
-        if(prompt.includes('change')) {
-            return jsonObject.changedImages;
-        }
-        if(prompt.includes('upload')) {
-            return jsonObject.uploadImages;
+            return jsonRef.current.uploadImages;
         }
     };
 
@@ -225,13 +246,16 @@ function App (props) {
             setInputText('');
 
             setTimeout(() => {
-                promptHandle(inputStr);
                 const botReply = {
                     text: "I'm a bot. I received your message.",
                     sender: 'Bot',
                 };
                 setMessages((prevMessages) => [...prevMessages, botReply]);
             }, 500);
+
+            setTimeout(() => {
+                promptHandle(inputStr);
+            }, 2000);
         }
     };
 
@@ -240,26 +264,23 @@ function App (props) {
         const type = response && response.type;
         if (type) {
             switch (type) {
-                case 'url' :
-                    const urls = jsonObject.urls.data;
-                    addUrlComponent(urls);
+                case 'imageAndUrl' :
+                    addImageAndUrlComponent(jsonRef.current.imageAndUrls.data);
                     break;
                 case 'imageAndText' :
-                    const imageAndTexts = jsonObject.imageUrls.data;
-                    addImageAndTextComponent(imageAndTexts);
+                    addImageAndTextComponent(jsonRef.current.imageAndTexts.data);
                     break;
-                case 'campaign_image' :
-                    //const campaignImages = jsonObject.campaignImages.data;
-                    const dataArr = await addTextOnImages();
-                    jsonObject.modifiedImages.data = dataArr;
-                    addImageAndTextComponent(dataArr);
+                case 'modifiedText' :
+                    addImageAndTextComponent(jsonRef.current.modifiedText.data);
                     break;
-                case 'change_image' :
-                    const finalImages = jsonObject.finalImages.data;
-                    addImageAndTextComponent(finalImages);
+                case 'experienceImage' :
+                    addImageAndTextComponent(jsonRef.current.experienceImages.data);
                     break;
-                case 'upload' :
-                    const image = jsonObject.uploadImages.data;
+                case 'campaignImage' :
+                    addImageAndTextComponent(jsonRef.current.campaignImages.data);
+                    break;
+                case 'uploadImage' :
+                    const image = jsonRef.current.uploadImages.data;
                     uploadImage(image);
                     break;
                 default:
@@ -302,7 +323,25 @@ function App (props) {
         ]);
     };
 
+    const addImageAndUrlComponent = (imageAndTexts) => {
+        setDynamicComponents((prev) => [
+            ...prev,
+            <>
+                <ImageAndTextContainer key={prev.length} ref={lastDynamicComponentRef}>
+                    {imageAndTexts.map(({ image, text }, index) => (
+                        <ImageContainer key={index} image={image}>
+                            <Image src={image} alt="Image" />
+                            <UrlText key={index} href={text} target="_blank">
+                                {text}
+                            </UrlText>
+                        </ImageContainer>
+                    ))}
+                </ImageAndTextContainer>,
+            </>,
+        ]);
+    };
     const addUrlComponent = (urls) => {
+        setLoading(true);
         setDynamicComponents((prev) => [
             ...prev,
             <UrlContainer key={prev.length} ref={lastDynamicComponentRef}>
@@ -323,32 +362,126 @@ function App (props) {
 
     const addTextOnImages = async () => {
         const arr = [];
-        for (const info of jsonObject.imageUrls.data) {
+        for (const info of jsonRef.current.imageUrls.data) {
             const imageData = await handleImageDownload(info.image);
-            const modifiedImage = await handleUpload(imageData, info.text);
-            arr.push({image:modifiedImage, text:''});
+            const modifiedImageData = await handleUpload(imageData, info.text);
+            const image = modifiedImageData[0];
+            const imageInfo = coordinates(modifiedImageData[1]);
+            arr.push({image, imageInfo});
         }
         return arr;
     };
 
-    const handleImageDownload = async (imageUrl) => {
-        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    //{ xl: 944, yl: 56, xr: 1017, yr: 818, fsz: 60, fontstr: 'Lace UpEnchane Game' }
+    const coordinates =  (inputString) => {
+        const objectArrayString = inputString.match(/\[.*\]/g)[0];
+        const validJsonString = objectArrayString.replace(/'/g, '"');
+        const objectArray = JSON.parse(validJsonString);
+        const position = objectArray[1];
+        const loc = [position.yl,position.xl];
+        const text = position.fontstr;
+        const size = [position.yr-position.yl,position.xr-position.xl];
+        const imgCoordinates = {loc, text, size};
+        return imgCoordinates;
+    }
 
+    const handleImageDownload = async (imageUrl) => {
+        const blob = await fetchUrl(imageUrl);
+        const dataUrl = await convertBlobToDataURL(blob);
+        console.log('handleImageDownload dataUrl:', dataUrl);
+        return dataUrl;
+    };
+
+    const fetchUrl = async (url) => {
         try {
-            const response = await fetch(proxyUrl + imageUrl);
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error("Failed to fetch image");
             }
 
-            const blob = await response.blob();
-
-            const dataUrl = await convertBlobToDataURL(blob);
-            console.log('handleImageDownload dataUrl:', dataUrl);
-            return dataUrl;
+            return await response.blob();
         } catch (error) {
             console.error("handleImageDownload Error fetching image:", error);
         }
     };
+
+    const updateImageAndText = async (prompt) => {
+        const params = {};
+        const imageUrls = jsonRef.current.imageUrls.data;
+
+        const imageNum = await getIndex(prompt);
+        const data = jsonRef.current.modifiedImages.data[imageNum];
+        const imageData = data.imageInfo;
+        const image = imageUrls[imageNum].image;
+        const text = imageUrls[imageNum].text;
+        const locHPos = await horizontalPos(prompt);
+        const locVPos = await verticalPos(prompt);
+        const theme = await getTheme(prompt);
+        const changeInSize = await changeSize(prompt);
+        const newLoc = [imageData.loc[0]+locHPos, imageData.loc[1]+locVPos];
+        const newSize = [imageData.size[0]+changeInSize, imageData.size[1]+changeInSize];
+
+        params.prompt = theme;
+        params.loc = newLoc.join(',');
+        params.size = newSize.join(',');
+        params.text = text;
+        params.img = image;
+        jsonRef.current.modifiedImages.data[imageNum].imageInfo = {loc:newLoc, size:newSize, text:text}
+
+        const queryParams = new URLSearchParams(params);
+        const url = `http://127.0.0.1:8000/is/image/base-image.jpeg?${queryParams}`;
+        const blob = await fetchUrl(url);
+        const dataUrl = await convertBlobToDataURL(blob);
+        jsonRef.current.modifiedImages.data[imageNum].image = dataUrl;
+        console.log('updateImageAndText blob', blob);
+        console.log('updateImageAndText dataUrl', dataUrl);
+    }
+
+    const getTheme = async (str) => {
+        const regexPattern = /to\s+(.*?)\s*(?:and|,|$)/;
+        const theme = str.match(regexPattern);
+        return theme;
+    }
+
+    const getIndex = async (array) => {
+        if(array.includes('second')){
+            return 1;
+        }
+        if(array.includes('third')){
+            return 2;
+        }
+        return 0;
+    }
+
+    const horizontalPos = async(array) => {
+        if(array.includes('right')){
+            return 20;
+        }
+        if(array.includes('left')){
+            return -20;
+        }
+        return 0;
+    }
+
+    const verticalPos = async(array) => {
+        if(array.includes('down')){
+            return 20;
+        }
+        if(array.includes('up')){
+            return 20;
+        }
+        return 0;
+    }
+
+    const changeSize = async(array) => {
+        if(array.includes('increase')){
+            return 10;
+        }
+        if(array.includes('decrease')){
+            return -10;
+        }
+        return 0;
+    }
 
     const convertBlobToDataURL = (blob) => {
         return new Promise((resolve, reject) => {
@@ -387,7 +520,7 @@ function App (props) {
 
             const data = response.data.data;
             console.log('handleUpload response data', data[0]);
-            return data[0];
+            return data;
         } catch (error) {
             console.error("handleUpload Error uploading image:", error);
         }
@@ -400,7 +533,13 @@ function App (props) {
         if (lastDynamicComponentRef.current) {
             lastDynamicComponentRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [messages, dynamicComponents]);
+        if (loading) {
+            const loadingTimer = setTimeout(() => {
+                setLoading(false);
+            }, 1000);
+            return () => clearTimeout(loadingTimer);
+        }
+    }, [loading, messages, dynamicComponents]);
 
     return (
         <div style={{ overflowX: 'hidden' }}>
@@ -433,22 +572,22 @@ function App (props) {
         </div>
     );
 
-  // Methods
+    // Methods
 
-  // error handler on UI rendering failure
-  function onError (e, componentStack) { }
+    // error handler on UI rendering failure
+    function onError (e, componentStack) { }
 
-  // component to show if UI fails rendering
-  function fallbackComponent ({ componentStack, error }) {
-    return (
-      <React.Fragment>
-        <h1 style={{ textAlign: 'center', marginTop: '20px' }}>
-          Something went wrong :(
-        </h1>
-        <pre>{componentStack + '\n' + error.message}</pre>
-      </React.Fragment>
-    )
-  }
+    // component to show if UI fails rendering
+    function fallbackComponent ({ componentStack, error }) {
+        return (
+            <React.Fragment>
+                <h1 style={{ textAlign: 'center', marginTop: '20px' }}>
+                    Something went wrong :(
+                </h1>
+                <pre>{componentStack + '\n' + error.message}</pre>
+            </React.Fragment>
+        )
+    }
 }
 
 export default App
